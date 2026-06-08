@@ -74,6 +74,88 @@ section h3 {
   margin-bottom: 8px;
 }
 
+.participants-section {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #ddd;
+}
+
+.participants-section h5 {
+  margin-bottom: 10px;
+  color: #1a237e;
+  font-size: 14px;
+}
+
+.participants-list {
+  margin-left: 0;
+  font-size: 14px;
+  color: #555;
+  list-style: none;
+}
+
+.participants-list li {
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.participant-email {
+  flex: 1;
+  word-break: break-word;
+}
+
+.participant-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.modify-btn,
+.delete-btn {
+  color: white;
+  border: none;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.modify-btn {
+  background-color: #4a90e2;
+}
+
+.modify-btn:hover {
+  background-color: #357abd;
+  transform: scale(1.1);
+}
+
+.modify-btn:active {
+  transform: scale(0.95);
+}
+
+.delete-btn {
+  background-color: #ff6b6b;
+  font-size: 18px;
+}
+
+.delete-btn:hover {
+  background-color: #ff5252;
+  transform: scale(1.1);
+}
+
+.delete-btn:active {
+  transform: scale(0.95);
+}
+
 .form-group {
   margin-bottom: 15px;
 }

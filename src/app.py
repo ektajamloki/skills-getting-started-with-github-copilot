@@ -105,3 +105,46 @@ def signup_for_activity(activity_name: str, email: str):
     # Add student
     activity["participants"].append(email)
     return {"message": f"Signed up {email} for {activity_name}"}
+
+
+@app.delete("/activities/{activity_name}/unregister")
+def unregister_from_activity(activity_name: str, email: str):
+    """Unregister a student from an activity"""
+    # Validate activity exists
+    if activity_name not in activities:
+        raise HTTPException(status_code=404, detail="Activity not found")
+
+    # Get the specific activity
+    activity = activities[activity_name]
+
+    # Validate student is registered
+    if email not in activity["participants"]:
+        raise HTTPException(status_code=400, detail="Student not registered for this activity")
+    
+    # Remove student
+    activity["participants"].remove(email)
+    return {"message": f"Unregistered {email} from {activity_name}"}
+
+
+@app.put("/activities/{activity_name}/modify")
+def modify_participant(activity_name: str, old_email: str, new_email: str):
+    """Modify a participant's email for an activity"""
+    # Validate activity exists
+    if activity_name not in activities:
+        raise HTTPException(status_code=404, detail="Activity not found")
+
+    # Get the specific activity
+    activity = activities[activity_name]
+
+    # Validate old email is registered
+    if old_email not in activity["participants"]:
+        raise HTTPException(status_code=400, detail="Participant not registered for this activity")
+    
+    # Validate new email is not already registered
+    if new_email in activity["participants"]:
+        raise HTTPException(status_code=400, detail="New email already registered for this activity")
+    
+    # Update participant email
+    index = activity["participants"].index(old_email)
+    activity["participants"][index] = new_email
+    return {"message": f"Updated {old_email} to {new_email} for {activity_name}"}
