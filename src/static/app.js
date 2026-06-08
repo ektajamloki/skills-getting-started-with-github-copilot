@@ -19,13 +19,85 @@ document.addEventListener("DOMContentLoaded", () => {
         activityCard.className = "activity-card";
 
         const spotsLeft = details.max_participants - details.participants.length;
+        const participantsList = details.participants
+          .map(email => `
+            <li>
+              <span class="participant-email">${email}</span>
+              <div class="participant-actions">
+                <button class="modify-btn" data-activity="${name}" data-email="${email}" title="Modify">✏️</button>
+                <button class="delete-btn" data-activity="${name}" data-email="${email}" title="Unregister">×</button>
+              </div>
+            </li>
+          `)
+          .join('');
 
         activityCard.innerHTML = `
           <h4>${name}</h4>
           <p>${details.description}</p>
           <p><strong>Schedule:</strong> ${details.schedule}</p>
           <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
+          <div class="participants-section">
+            <h5>Registered Participants</h5>
+            <ul class="participants-list">
+              ${participantsList}
+            </ul>
+          </div>
         `;
+
+        // Add modify button event listeners
+        activityCard.querySelectorAll('.modify-btn').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const activity = btn.getAttribute('data-activity');
+            const oldEmail = btn.getAttribute('data-email');
+            const newEmail = prompt('Enter new email address:', oldEmail);
+            
+            if (newEmail && newEmail !== oldEmail) {
+              try {
+                const response = await fetch(
+                  `/activities/${encodeURIComponent(activity)}/modify?old_email=${encodeURIComponent(oldEmail)}&new_email=${encodeURIComponent(newEmail)}`,
+                  { method: 'PUT' }
+                );
+                
+                if (response.ok) {
+                  fetchActivities();
+                } else {
+                  const result = await response.json();
+                  alert(result.detail || 'Failed to modify participant');
+                }
+              } catch (error) {
+                alert('Error modifying participant');
+                console.error(error);
+              }
+            }
+          });
+        });
+
+        // Add delete button event listeners
+        activityCard.querySelectorAll('.delete-btn').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const activity = btn.getAttribute('data-activity');
+            const email = btn.getAttribute('data-email');
+            
+            try {
+              const response = await fetch(
+                `/activities/${encodeURIComponent(activity)}/unregister?email=${encodeURIComponent(email)}`,
+                { method: 'DELETE' }
+              );
+              
+              if (response.ok) {
+                fetchActivities();
+              } else {
+                const result = await response.json();
+                alert(result.detail || 'Failed to unregister');
+              }
+            } catch (error) {
+              alert('Error unregistering participant');
+              console.error(error);
+            }
+          });
+        });
 
         activitiesList.appendChild(activityCard);
 
@@ -62,6 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
         messageDiv.textContent = result.message;
         messageDiv.className = "success";
         signupForm.reset();
+        fetchActivities();
       } else {
         messageDiv.textContent = result.detail || "An error occurred";
         messageDiv.className = "error";
